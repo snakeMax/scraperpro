@@ -5,7 +5,6 @@ from scraper import scrape_url
 
 
 ### Global Variables
-
 website_urls = []
 filename = "scraped_content.txt" # File to save content to
 content = [] # list contents of website
@@ -33,7 +32,8 @@ if st.button("Scrape"):
 
         # Save content to the text file
         with open(filename, "w") as file:
-            file.write(content)
+            for i in content:
+                file.write(i + "\n")
 
         st.write(f"Content saved to {filename}")
 

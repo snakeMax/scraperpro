@@ -1,34 +1,33 @@
 import os
 import requests
 import zipfile
+from chromeV import ChromeVersion
 
-def get_chrome_version():
-    import winreg
-    reg_key = r"SOFTWARE\Google\Chrome\BLBeacon"
-    try:
-        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, reg_key) as key:
-            version, _ = winreg.QueryValueEx(key, "version")
-            return version
-    except OSError:
-        return None
 
 def download_chrome_driver(version):
-    url = f"https://chromedriver.storage.googleapis.com/{version}/chromedriver_win32.zip"
+    url = f"https://storage.googleapis.com/chrome-for-testing-public/{version}/win64/chromedriver-win64.zip"
     response = requests.get(url, stream=True)
     if response.status_code == 200:
-        with open("chromedriver.zip", "wb") as f:
+        print("Downloading Chrome driver...")
+        with open("chromedriver-win64.zip", "wb") as f:
             for chunk in response.iter_content(chunk_size=1024):
                 f.write(chunk)
-        with zipfile.ZipFile("chromedriver.zip", "r") as zip_ref:
-            zip_ref.extractall("driver")
-        os.remove("chromedriver.zip")
+
+        driver_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), "driver")
+        with zipfile.ZipFile("chromedriver-win64.zip", "r") as zip_ref:
+            zip_ref.extractall(driver_folder)
+        print("Chrome driver downloaded successfully")
+        os.remove("chromedriver-win64.zip")
     else:
         print("Failed to download Chrome driver")
 
 def main():
-    chrome_version = get_chrome_version()
+    chromeversion = ChromeVersion()
+    chromeversion.get_chrome_version()
+    chrome_version = chromeversion.get_chrome_version()
     if chrome_version:
-        driver_path = os.path.join("driver", "chromedriver.exe")
+        print(f"Chrome version: {chrome_version}")
+        driver_path = os.path.join("chromedriver-win64", "chromedriver.exe")
         if not os.path.exists(driver_path):
             download_chrome_driver(chrome_version)
         else:

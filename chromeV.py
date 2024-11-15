@@ -1,6 +1,5 @@
 import os
 import re
-from sys import platform
 
 
 class ChromeVersion:
