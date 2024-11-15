@@ -1,13 +1,12 @@
-import bs4 as bs
 import requests as r
 import streamlit as st
-from scraper import scrape_url
+from scraper import scrape_url, split_dom, extract_content, clean_body
 
 
 ### Global Variables
 website_urls = []
 filename = "scraped_content.txt" # File to save content to
-content = [] # list contents of website
+text_to_save = [] # list contents of website
 
 # Example URLs
 # https://books.toscrape.com/, https://www.perplexity.ai/, https://www.google.com/
@@ -26,14 +25,33 @@ if st.button("Scrape"):
 
 
         result = scrape_url(i)
-        print(result)
-        content.append(result)
+        body_content = extract_content(result)
+        cleaned_body = clean_body(body_content)
+        print("Cleanup successful")
+
+        st.session_state.dom_content = cleaned_body
+
+        with st.expander("View DOM Content"):
+            st.text_area("DOM Content", cleaned_body, height=300)
+
+        print("DOM content extracted successfully")
+
+        text_to_save.append(cleaned_body)
 
 
         # Save content to the text file
         with open(filename, "w") as file:
-            for i in content:
+            for i in text_to_save:
                 file.write(i + "\n")
 
         st.write(f"Content saved to {filename}")
 
+
+if "dom_content" in st.session_state:
+    parse_description = st.text_area("Describe the info you need")
+
+    if st.button("Parse"):
+        if parse_description:
+            st.write("Parsing content...")
+
+            dom_chunks = split_dom(st.session_state.dom_content)

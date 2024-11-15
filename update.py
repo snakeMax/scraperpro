@@ -3,6 +3,8 @@ import requests
 import zipfile
 from chromeV import ChromeVersion
 
+### Program will get chrome version, then download the appropriate chrome driver
+### Delete the chrome driver in the driver folder if its not up to date
 
 def download_chrome_driver(version):
     url = f"https://storage.googleapis.com/chrome-for-testing-public/{version}/win64/chromedriver-win64.zip"

@@ -1,8 +1,33 @@
 import selenium.webdriver as wd
 from selenium.webdriver.chrome.service import Service
 import os
+from bs4 import BeautifulSoup
+
+def extract_content(html):
+    soup = BeautifulSoup(html, "html.parser")
+    bodyc = soup.body
+
+    if bodyc:
+        return str(bodyc)
+    return ""
+    
+def clean_body(body):
+    soup = BeautifulSoup(body, "html.parser")
+
+    for script_or_style in soup(["script", "style"]):
+        script_or_style.extract()
+
+    cleaned = soup.get_text(separator="\n")
+    cleaned = "\n".join(line.strip() for line in cleaned.splitlines() if line.strip())
+    return cleaned
+
+
+def split_dom(content, max_length=6000):
+    return [content[i:i+max_length] for i in range(0, len(content), max_length)]
+
 
 def scrape_url(url):
+
 
     print(f"Running chrome driver for url: {url}")
     print(os.getcwd())
