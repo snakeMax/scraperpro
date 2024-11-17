@@ -1,6 +1,7 @@
 import requests as r
 import streamlit as st
 from scraper import scrape_url, split_dom, extract_content, clean_body
+import parse
 
 
 ### Global Variables
@@ -36,16 +37,6 @@ if st.button("Scrape"):
 
         print("DOM content extracted successfully")
 
-        text_to_save.append(cleaned_body)
-
-
-        # Save content to the text file
-        with open(filename, "w") as file:
-            for i in text_to_save:
-                file.write(i + "\n")
-
-        st.write(f"Content saved to {filename}")
-
 
 if "dom_content" in st.session_state:
     parse_description = st.text_area("Describe the info you need")
@@ -53,5 +44,21 @@ if "dom_content" in st.session_state:
     if st.button("Parse"):
         if parse_description:
             st.write("Parsing content...")
+            print("Parsing content...")
 
             dom_chunks = split_dom(st.session_state.dom_content)
+
+            parsed_results = parse.parse_withAI(dom_chunks, parse_description)
+            print("Parsing completed")
+            st.write(parsed_results)
+
+
+            text_to_save.append(parsed_results)
+
+
+            # Save content to the text file
+            with open(filename, "w") as file:
+                for i in text_to_save:
+                    file.write(i + "\n")
+
+            st.write(f"Content saved to {filename}")

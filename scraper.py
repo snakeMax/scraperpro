@@ -3,6 +3,8 @@ from selenium.webdriver.chrome.service import Service
 import os
 from bs4 import BeautifulSoup
 
+irrelevant_tags = ["script", "style", "select"]
+
 def extract_content(html):
     soup = BeautifulSoup(html, "html.parser")
     bodyc = soup.body
@@ -14,8 +16,8 @@ def extract_content(html):
 def clean_body(body):
     soup = BeautifulSoup(body, "html.parser")
 
-    for script_or_style in soup(["script", "style"]):
-        script_or_style.extract()
+    for irrelevant in soup(irrelevant_tags):
+        irrelevant.extract()
 
     cleaned = soup.get_text(separator="\n")
     cleaned = "\n".join(line.strip() for line in cleaned.splitlines() if line.strip())
